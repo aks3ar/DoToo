@@ -1,6 +1,6 @@
 import {
   requestClear,
-  // requestTodoDetails,
+  requestTodoDetails,
   // requestTodoDelete,
   requestTodoCreate,
   // requestTodoUpdate,
@@ -11,28 +11,32 @@ import {
 const OK = 200;
 const ERROR = { error: expect.any(String) };
 
-// let tagListObj: any;
-// let firstTagId: any;
+let todoItemIdObj: any;
 
-// describe('requestTodoDetails Tests', () => {
-//   beforeEach(() => {
-//     requestClear();
-//     requestTagCreate('Tag1');
-//     tagListObj = requestTagList();
-//     const firstTag = tagListObj.returnBody.tags[0];
-//     firstTagId = firstTag.tagId;
-//   });
-//   test('All Correct', () => {
-//     const res = requestTagName(firstTagId);
-//     expect(res.statusCode).toStrictEqual(OK);
-//     expect(res.returnBody).toStrictEqual({ name: 'Tag1' });
-//   });
-//   test('tagId does not exist', () => {
-//     const res = requestTagName(-1);
-//     expect(res.statusCode).toStrictEqual(400);
-//     expect(res.returnBody).toStrictEqual(ERROR);
-//   });
-// });
+describe('requestTodoDetails Tests', () => {
+  beforeEach(() => {
+    requestClear();
+    todoItemIdObj = requestTodoCreate('description', null);
+  });
+  test('All Correct', () => {
+    const res = requestTodoDetails(todoItemIdObj.returnBody.todoItemId);
+    expect(res.statusCode).toStrictEqual(OK);
+    expect(res.returnBody).toStrictEqual(
+      {
+        description: 'description',
+        parentId: null,
+        score: 'NA',
+        status: 'TODO',
+        tagIds: []
+      }
+    );
+  });
+  test('tagId does not exist', () => {
+    const res = requestTodoDetails(-1);
+    expect(res.statusCode).toStrictEqual(400);
+    expect(res.returnBody).toStrictEqual(ERROR);
+  });
+});
 
 // describe('requestTodoDelete Tests', () => {
 //   beforeEach(() => {

@@ -33,6 +33,14 @@ export enum TodoScore {
   HIGH = 'HIGH',
 }
 
+export interface TodoDetailsReturn {
+  description: string;
+  tagIds: number[];
+  status: TodoStatus;
+  parentId: number;
+  score: TodoScore;
+}
+
 export interface NewTodo {
   todoItemId: number;
   description: string;
@@ -45,4 +53,16 @@ export interface NewTodo {
 
 export interface TodoCreateReturn {
   todoItemId: number;
+}
+
+export interface TodoItems {
+  description: string;
+  tagIds: TagList[];
+  status: TodoStatus;
+  parentId: number;
+  score: TodoScore;
+}
+
+export interface TodoListReturn {
+  todoItems: TodoItems[];
 }

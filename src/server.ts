@@ -16,7 +16,7 @@ import {
 } from './tag';
 
 import {
-  // todoDetails,
+  todoDetails,
   // todoDelete,
   todoCreate,
   // todoUpdate,
@@ -95,18 +95,18 @@ app.post('/tag', (req: Request, res: Response) => {
   res.json(response);
 });
 
-// app.get('/todo/item', (req: Request, res: Response) => {
-//   const todoItemId = req.query.todoItemId as string;
-//   const response = todoDetails(todoItemId);
-//   if ('error' in response) {
-//     res.status(response.code).json({ error: response.error });
-//     return;
-//   }
-//   res.json(response);
-// });
+app.get('/todo/item', (req: Request, res: Response) => {
+  const todoItemId = parseInt(req.query.todoItemId as string);
+  const response = todoDetails(todoItemId);
+  if ('error' in response) {
+    res.status(response.code).json({ error: response.error });
+    return;
+  }
+  res.json(response);
+});
 
 // app.delete('/todo/item', (req: Request, res: Response) => {
-//   const todoItemId = req.query.todoItemId as string;
+//   const todoItemId = parseInt(req.query.todoItemId as string);
 //   const response = todoDelete(todoItemId);
 //   if ('error' in response) {
 //     res.status(response.code).json({ error: response.error });
