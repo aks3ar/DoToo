@@ -14,6 +14,7 @@ export function clear() {
 
   data = {
     tags: [],
+    todos: []
   };
 
   setData(data);

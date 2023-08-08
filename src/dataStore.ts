@@ -4,12 +4,37 @@ export type Tag = {
   name: string;
 }
 
+export enum TodoStatus {
+  TODO = 'TODO',
+  INPROGRESS = 'INPROGRESS',
+  BLOCKED = 'BLOCKED',
+  DONE = 'DONE',
+}
+
+export enum TodoScore {
+  NA = 'NA',
+  LOW = 'LOW',
+  HIGH = 'HIGH',
+}
+
+export type Todo = {
+  todoItemId: number;
+  description: string;
+  tagIds: number[];
+  status: TodoStatus;
+  parentId: number | null;
+  score: TodoScore;
+  deadline: number | null;
+}
+
 export type Data = {
   tags: Tag[];
+  todos: Todo[];
 };
 
 let data: Data = {
   tags: [],
+  todos: [],
 };
 
 // Use get() to access the data

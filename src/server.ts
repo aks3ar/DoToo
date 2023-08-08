@@ -4,29 +4,29 @@ import config from './config.json';
 import cors from 'cors';
 import errorHandler from 'middleware-http-errors';
 
-import { 
-  clear 
+import {
+  clear
 } from './clear';
 
-import { 
-  tagList, 
-  tagName, 
-  tagDelete, 
-  tagCreate 
+import {
+  tagList,
+  tagName,
+  tagDelete,
+  tagCreate
 } from './tag';
 
-// import { 
-//   todoDetails, 
-//   todoDelete, 
-//   todoCreate, 
-//   todoUpdate, 
-//   todoList, 
-//   todoBulk 
-// } from './todo';
+import {
+  // todoDetails,
+  // todoDelete,
+  todoCreate,
+  // todoUpdate,
+  // todoList,
+  // todoBulk
+} from './todo';
 
-// import { 
-//   summary, 
-//   notifications 
+// import {
+//   summary,
+//   notifications
 // } from './other';
 
 // Set up web app
@@ -115,15 +115,15 @@ app.post('/tag', (req: Request, res: Response) => {
 //   res.json(response);
 // });
 
-// app.post('/todo/item', (req: Request, res: Response) => {
-//   const { description, parentId } = req.body;
-//   const response = todoCreate(description, parentId);
-//   if ('error' in response) {
-//     res.status(response.code).json({ error: response.error });
-//     return;
-//   }
-//   res.json(response);
-// });
+app.post('/todo/item', (req: Request, res: Response) => {
+  const { description, parentId } = req.body;
+  const response = todoCreate(description, parentId);
+  if ('error' in response) {
+    res.status(response.code).json({ error: response.error });
+    return;
+  }
+  res.json(response);
+});
 
 // app.put('/todo/item', (req: Request, res: Response) => {
 //   const { todoItemId, description, tagIds, status, parentId, deadline } = req.body;
