@@ -2,7 +2,9 @@ import HTTPError from 'http-errors';
 import { getData, setData } from './dataStore';
 import {
   Error,
-  TagCreateReturn
+  TagCreateReturn,
+  TagList,
+  TagListReturn
 } from './interface';
 
 /**
@@ -14,6 +16,24 @@ import {
   * @returns {} - Returns an empty object.
   *
 */
+export function tagList(name: string): TagListReturn | Error {
+  const data = getData();
+
+  const tags: TagList[] = [];
+  let currTag: any;
+  for (currTag of data.tags) {
+    if (currTag) {
+      tags.push(
+        {
+          tagId: currTag.tagId,
+          name: currTag.name
+        }
+      );
+    }
+  }
+
+  return { tags };
+}
 
 /**
   * Get a tag name
@@ -44,7 +64,7 @@ import {
   * @returns {} - Returns an empty object.
   *
 */
-export function tagCreate(name: string) : TagCreateReturn | Error {
+export function tagCreate(name: string): TagCreateReturn | Error {
   const data = getData();
   const lowerBound = 1;
   const upperBound = 10;

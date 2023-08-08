@@ -79,7 +79,7 @@ describe('requestTagCreate Tests', () => {
   test('All Correct', () => {
     const res = requestTagCreate('TagName');
     expect(res.statusCode).toStrictEqual(OK);
-    // expect(res.returnBody).toStrictEqual("ERROR");
+    expect(res.returnBody).toStrictEqual(expect.any(Number));
   });
   test('name is shorter than 1 character', () => {
     const res = requestTagCreate('');

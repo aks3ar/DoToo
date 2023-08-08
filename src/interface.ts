@@ -6,3 +6,12 @@ export interface Error {
 export interface TagCreateReturn {
   tagId: number;
 }
+
+export interface TagList {
+  tagId: number;
+  name: string;
+}
+
+export interface TagListReturn {
+  tags: TagList[];
+}
