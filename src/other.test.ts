@@ -6,7 +6,7 @@ import {
 
 const OK = 200;
 
-describe('requestTagList Tests', () => {
+describe('requestClear Tests', () => {
   beforeEach(() => {
     requestTagCreate('Tag1');
     requestTagCreate('Tag2');
