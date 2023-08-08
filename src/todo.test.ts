@@ -81,7 +81,8 @@ describe('requestTodoCreate Tests', () => {
     expect(res.statusCode).toStrictEqual(400);
     expect(res.returnBody).toStrictEqual(ERROR);
   });
-  test.skip('A todo item of this description, that shares a common immediate parent task (or a null parent), already exists.', () => {
+  test('A todo item of this description, that shares a common immediate parent task (or a null parent), already exists.', () => {
+    requestTodoCreate('description', null);
     const res = requestTodoCreate('description', null);
     expect(res.statusCode).toStrictEqual(400);
     expect(res.returnBody).toStrictEqual(ERROR);
