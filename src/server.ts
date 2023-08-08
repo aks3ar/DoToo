@@ -4,9 +4,9 @@ import config from './config.json';
 import cors from 'cors';
 import errorHandler from 'middleware-http-errors';
 
-// import { 
-//   clear 
-// } from './clear';
+import { 
+  clear 
+} from './clear';
 
 // import { 
 //   tagList, 
@@ -51,10 +51,10 @@ app.get('/example/route', (req: Request, res: Response) => {
   return res.json({ message: 'Hi' });
 });
 
-// app.delete('/clear', (req: Request, res: Response) => {
-//   const response = clear();
-//   res.json(response);
-// });
+app.delete('/clear', (req: Request, res: Response) => {
+  const response = clear();
+  res.json(response);
+});
 
 // app.get('/tag/list', (req: Request, res: Response) => {
 //   const response = tagList();
