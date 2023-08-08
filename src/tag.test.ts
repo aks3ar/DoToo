@@ -76,9 +76,10 @@ describe('requestTagCreate Tests', () => {
   beforeEach(() => {
     requestClear();
   });
-  test.skip('All Correct', () => {
+  test('All Correct', () => {
     const res = requestTagCreate('TagName');
     expect(res.statusCode).toStrictEqual(OK);
+    // expect(res.returnBody).toStrictEqual("ERROR");
   });
   test('name is shorter than 1 character', () => {
     const res = requestTagCreate('');

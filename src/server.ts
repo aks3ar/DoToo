@@ -8,12 +8,12 @@ import {
   clear 
 } from './clear';
 
-// import { 
-//   tagList, 
-//   tagName, 
-//   tagDelete, 
-//   tagCreate 
-// } from './tag';
+import { 
+  // tagList, 
+  // tagName, 
+  // tagDelete, 
+  tagCreate 
+} from './tag';
 
 // import { 
 //   todoDetails, 
@@ -85,15 +85,15 @@ app.delete('/clear', (req: Request, res: Response) => {
 //   res.json(response);
 // });
 
-// app.post('/tag', (req: Request, res: Response) => {
-//   const { name } = req.body;
-//   const response = tagCreate(name);
-//   if ('error' in response) {
-//     res.status(response.code).json({ error: response.error });
-//     return;
-//   }
-//   res.json(response);
-// });
+app.post('/tag', (req: Request, res: Response) => {
+  const { name } = req.body;
+  const response = tagCreate(name);
+  if ('error' in response) {
+    res.status(response.code).json({ error: response.error });
+    return;
+  }
+  res.json(response);
+});
 
 // app.get('/todo/item', (req: Request, res: Response) => {
 //   const todoItemId = req.query.todoItemId as string;

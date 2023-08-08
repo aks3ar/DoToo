@@ -1,5 +1,9 @@
 import HTTPError from 'http-errors';
 import { getData, setData } from './dataStore';
+import {
+  Error,
+  TagCreateReturn
+} from './interface';
 
 /**
   * Get a list of all tags
@@ -40,7 +44,7 @@ import { getData, setData } from './dataStore';
   * @returns {} - Returns an empty object.
   *
 */
-export function tagCreate(name: string) {
+export function tagCreate(name: string) : TagCreateReturn | Error {
   const data = getData();
   const lowerBound = 1;
   const upperBound = 10;
