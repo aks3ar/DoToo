@@ -1,13 +1,16 @@
 import {
   requestClear,
   requestTagList,
-  // requestTagName,
+  requestTagName,
   // requestTagDelete,
   requestTagCreate
 } from './helperTest';
 
 const OK = 200;
 const ERROR = { error: expect.any(String) };
+
+let tagListObj: any;
+let firstTagId: any;
 
 describe('requestTagList Tests', () => {
   beforeEach(() => {
@@ -35,26 +38,25 @@ describe('requestTagList Tests', () => {
   });
 });
 
-// describe('requestTagName Tests', () => {
-//   beforeEach(() => {
-//     requestClear();
-//   });
-//   test('All Correct', () => {
-//     const res = requestTagList();
-//     expect(res.statusCode).toStrictEqual(OK);
-//     expect(res.returnBody).toStrictEqual();
-//   });
-//   test('Token is not a valid structure', () => {
-//     const res = requestTagList();
-//     expect(res.statusCode).toStrictEqual(400);
-//     expect(res.returnBody).toStrictEqual(ERROR);
-//   });
-//   test('Provided token is valid structure, but is not for a currently logged in session', () => {
-//     const res = requestTagList();
-//     expect(res.statusCode).toStrictEqual(400);
-//     expect(res.returnBody).toStrictEqual(ERROR);
-//   });
-// });
+describe('requestTagName Tests', () => {
+  beforeEach(() => {
+    requestClear();
+    requestTagCreate('Tag1');
+    tagListObj = requestTagList();
+    const firstTag = tagListObj.returnBody.tags[0];
+    firstTagId = firstTag.tagId;
+  });
+  test('All Correct', () => {
+    const res = requestTagName(firstTagId);
+    expect(res.statusCode).toStrictEqual(OK);
+    expect(res.returnBody).toStrictEqual({ name: 'Tag1' });
+  });
+  test('tagId does not exist', () => {
+    const res = requestTagName(-1);
+    expect(res.statusCode).toStrictEqual(400);
+    expect(res.returnBody).toStrictEqual(ERROR);
+  });
+});
 
 // describe('requestTagDelete Tests', () => {
 //   beforeEach(() => {

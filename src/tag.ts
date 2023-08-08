@@ -4,7 +4,8 @@ import {
   Error,
   TagCreateReturn,
   TagList,
-  TagListReturn
+  TagListReturn,
+  TagNameReturn
 } from './interface';
 
 /**
@@ -44,6 +45,16 @@ export function tagList(): TagListReturn | Error {
   * @returns {} - Returns an empty object.
   *
 */
+export function tagName(tagId: number): TagNameReturn | Error {
+  const data = getData();
+
+  const findTag = data.tags.find(tag => tag.tagId === tagId);
+  if (!findTag) {
+    throw HTTPError(400, 'tagId does not exist');
+  }
+
+  return { name: findTag.name };
+}
 
 /**
   * Delete a tag

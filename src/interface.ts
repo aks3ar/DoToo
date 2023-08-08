@@ -15,3 +15,7 @@ export interface TagList {
 export interface TagListReturn {
   tags: TagList[];
 }
+
+export interface TagNameReturn {
+  name: string;
+}

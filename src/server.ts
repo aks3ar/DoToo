@@ -10,7 +10,7 @@ import {
 
 import { 
   tagList, 
-  // tagName, 
+  tagName, 
   // tagDelete, 
   tagCreate 
 } from './tag';
@@ -65,18 +65,18 @@ app.get('/tag/list', (req: Request, res: Response) => {
   res.json(response);
 });
 
-// app.get('/tag/name', (req: Request, res: Response) => {
-//   const tagId = req.query.tagId as string;
-//   const response = tagName(tagId);
-//   if ('error' in response) {
-//     res.status(response.code).json({ error: response.error });
-//     return;
-//   }
-//   res.json(response);
-// });
+app.get('/tag', (req: Request, res: Response) => {
+  const tagId = parseInt(req.query.tagId as string);
+  const response = tagName(tagId);
+  if ('error' in response) {
+    res.status(response.code).json({ error: response.error });
+    return;
+  }
+  res.json(response);
+});
 
 // app.delete('/tag', (req: Request, res: Response) => {
-//   const tagId = req.query.tagId as string;
+//   const tagId = parseInt(req.query.tagId as string);
 //   const response = tagDelete(tagId);
 //   if ('error' in response) {
 //     res.status(response.code).json({ error: response.error });
