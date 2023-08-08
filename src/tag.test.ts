@@ -2,7 +2,7 @@ import {
   requestClear,
   requestTagList,
   requestTagName,
-  // requestTagDelete,
+  requestTagDelete,
   requestTagCreate
 } from './helperTest';
 
@@ -58,26 +58,45 @@ describe('requestTagName Tests', () => {
   });
 });
 
-// describe('requestTagDelete Tests', () => {
-//   beforeEach(() => {
-//     requestClear();
-//   });
-//   test('All Correct', () => {
-//     const res = requestTagList();
-//     expect(res.statusCode).toStrictEqual(OK);
-//     expect(res.returnBody).toStrictEqual();
-//   });
-//   test('Token is not a valid structure', () => {
-//     const res = requestTagList();
-//     expect(res.statusCode).toStrictEqual(400);
-//     expect(res.returnBody).toStrictEqual(ERROR);
-//   });
-//   test('Provided token is valid structure, but is not for a currently logged in session', () => {
-//     const res = requestTagList();
-//     expect(res.statusCode).toStrictEqual(400);
-//     expect(res.returnBody).toStrictEqual(ERROR);
-//   });
-// });
+describe('requestTagDelete Tests', () => {
+  beforeEach(() => {
+    requestClear();
+  });
+  describe('All Correct', () => {
+    beforeEach(() => {
+      requestTagCreate('Tag1');
+      requestTagCreate('Tag2');
+      tagListObj = requestTagList();
+      const firstTag = tagListObj.returnBody.tags[0];
+      firstTagId = firstTag.tagId;
+    });
+    test('requestTagDelete Check', () => {
+      const res = requestTagDelete(firstTagId);
+      expect(res.statusCode).toStrictEqual(OK);
+      expect(res.returnBody).toStrictEqual({});
+    });
+    test('requestTagList Check', () => {
+      requestTagDelete(firstTagId);
+      const res = requestTagList();
+      expect(res.statusCode).toStrictEqual(OK);
+      expect(res.returnBody).toStrictEqual(
+        {
+          tags: [
+            {
+              name: 'Tag2',
+              tagId: expect.any(Number)
+            }
+          ]
+        }
+      );
+    });
+  });
+  test('tagId does not exist', () => {
+    const res = requestTagName(-1);
+    expect(res.statusCode).toStrictEqual(400);
+    expect(res.returnBody).toStrictEqual(ERROR);
+  });
+});
 
 describe('requestTagCreate Tests', () => {
   beforeEach(() => {

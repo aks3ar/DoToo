@@ -11,7 +11,7 @@ import {
 import { 
   tagList, 
   tagName, 
-  // tagDelete, 
+  tagDelete, 
   tagCreate 
 } from './tag';
 
@@ -75,15 +75,15 @@ app.get('/tag', (req: Request, res: Response) => {
   res.json(response);
 });
 
-// app.delete('/tag', (req: Request, res: Response) => {
-//   const tagId = parseInt(req.query.tagId as string);
-//   const response = tagDelete(tagId);
-//   if ('error' in response) {
-//     res.status(response.code).json({ error: response.error });
-//     return;
-//   }
-//   res.json(response);
-// });
+app.delete('/tag', (req: Request, res: Response) => {
+  const tagId = parseInt(req.query.tagId as string);
+  const response = tagDelete(tagId);
+  if ('error' in response) {
+    res.status(response.code).json({ error: response.error });
+    return;
+  }
+  res.json(response);
+});
 
 app.post('/tag', (req: Request, res: Response) => {
   const { name } = req.body;

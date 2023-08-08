@@ -17,7 +17,7 @@ import {
   * @returns {} - Returns an empty object.
   *
 */
-export function tagList(): TagListReturn | Error {
+export function tagList() : TagListReturn | Error {
   const data = getData();
 
   const tags: TagList[] = [];
@@ -45,7 +45,7 @@ export function tagList(): TagListReturn | Error {
   * @returns {} - Returns an empty object.
   *
 */
-export function tagName(tagId: number): TagNameReturn | Error {
+export function tagName(tagId: number) : TagNameReturn | Error {
   const data = getData();
 
   const findTag = data.tags.find(tag => tag.tagId === tagId);
@@ -65,6 +65,20 @@ export function tagName(tagId: number): TagNameReturn | Error {
   * @returns {} - Returns an empty object.
   *
 */
+export function tagDelete(tagId: number) : object | Error {
+  const data = getData();
+
+  const findTag = data.tags.find(tag => tag.tagId === tagId);
+  if (!findTag) {
+    throw HTTPError(400, 'tagId does not exist');
+  }
+
+  const index = data.tags.findIndex(tag => tag.tagId === tagId);
+  data.tags.splice(index, 1);
+  setData(data);
+
+  return {};
+}
 
 /**
   * Create a new tag
@@ -75,7 +89,7 @@ export function tagName(tagId: number): TagNameReturn | Error {
   * @returns {} - Returns an empty object.
   *
 */
-export function tagCreate(name: string): TagCreateReturn | Error {
+export function tagCreate(name: string) : TagCreateReturn | Error {
   const data = getData();
   const lowerBound = 1;
   const upperBound = 10;
