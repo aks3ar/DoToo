@@ -16,7 +16,7 @@ import {
   * @returns {} - Returns an empty object.
   *
 */
-export function tagList(name: string): TagListReturn | Error {
+export function tagList(): TagListReturn | Error {
   const data = getData();
 
   const tags: TagList[] = [];

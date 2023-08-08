@@ -9,7 +9,7 @@ import {
 } from './clear';
 
 import { 
-  // tagList, 
+  tagList, 
   // tagName, 
   // tagDelete, 
   tagCreate 
@@ -56,14 +56,14 @@ app.delete('/clear', (req: Request, res: Response) => {
   res.json(response);
 });
 
-// app.get('/tag/list', (req: Request, res: Response) => {
-//   const response = tagList();
-//   if ('error' in response) {
-//     res.status(response.code).json({ error: response.error });
-//     return;
-//   }
-//   res.json(response);
-// });
+app.get('/tag/list', (req: Request, res: Response) => {
+  const response = tagList();
+  if ('error' in response) {
+    res.status(response.code).json({ error: response.error });
+    return;
+  }
+  res.json(response);
+});
 
 // app.get('/tag/name', (req: Request, res: Response) => {
 //   const tagId = req.query.tagId as string;

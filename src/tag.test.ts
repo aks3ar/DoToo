@@ -1,6 +1,6 @@
 import {
   requestClear,
-  // requestTagList,
+  requestTagList,
   // requestTagName,
   // requestTagDelete,
   requestTagCreate
@@ -9,26 +9,31 @@ import {
 const OK = 200;
 const ERROR = { error: expect.any(String) };
 
-// describe('requestTagList Tests', () => {
-//   beforeEach(() => {
-//     requestClear();
-//   });
-//   test('All Correct', () => {
-//     const res = requestTagList();
-//     expect(res.statusCode).toStrictEqual(OK);
-//     expect(res.returnBody).toStrictEqual();
-//   });
-//   test('Token is not a valid structure', () => {
-//     const res = requestTagList();
-//     expect(res.statusCode).toStrictEqual(400);
-//     expect(res.returnBody).toStrictEqual(ERROR);
-//   });
-//   test('Provided token is valid structure, but is not for a currently logged in session', () => {
-//     const res = requestTagList();
-//     expect(res.statusCode).toStrictEqual(400);
-//     expect(res.returnBody).toStrictEqual(ERROR);
-//   });
-// });
+describe('requestTagList Tests', () => {
+  beforeEach(() => {
+    requestClear();
+    requestTagCreate('Tag1');
+    requestTagCreate('Tag2');
+  });
+  test('All Correct', () => {
+    const res = requestTagList();
+    expect(res.statusCode).toStrictEqual(OK);
+    expect(res.returnBody).toStrictEqual(
+      {
+        tags: [
+          {
+            name: 'Tag1',
+            tagId: expect.any(Number)
+          },
+          {
+            name: 'Tag2',
+            tagId: expect.any(Number)
+          }
+        ]
+      }
+    );
+  });
+});
 
 // describe('requestTagName Tests', () => {
 //   beforeEach(() => {
@@ -79,7 +84,7 @@ describe('requestTagCreate Tests', () => {
   test('All Correct', () => {
     const res = requestTagCreate('TagName');
     expect(res.statusCode).toStrictEqual(OK);
-    expect(res.returnBody).toStrictEqual(expect.any(Number));
+    expect(res.returnBody).toStrictEqual({ tagId: expect.any(Number) });
   });
   test('name is shorter than 1 character', () => {
     const res = requestTagCreate('');
