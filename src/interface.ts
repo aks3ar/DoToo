@@ -20,14 +20,15 @@ export interface TagNameReturn {
   name: string;
 }
 
-export enum TodoStatus {
+export enum TodoStatuses {
   TODO = 'TODO',
   INPROGRESS = 'INPROGRESS',
   BLOCKED = 'BLOCKED',
   DONE = 'DONE',
+
 }
 
-export enum TodoScore {
+export enum TodoScores {
   NA = 'NA',
   LOW = 'LOW',
   HIGH = 'HIGH',
@@ -36,9 +37,9 @@ export enum TodoScore {
 export interface TodoDetailsReturn {
   description: string;
   tagIds: number[];
-  status: TodoStatus;
+  status: TodoStatuses;
   parentId: number;
-  score: TodoScore;
+  score: TodoScores;
 }
 
 export interface NewTodo {
@@ -46,23 +47,33 @@ export interface NewTodo {
   description: string;
   tagIds: number[];
   parentId: number | null;
-  status: TodoStatus;
+  status: TodoStatuses;
   deadline: number | null;
-  score: TodoScore;
+  score: TodoScores;
+  timeCreated: number;
 }
 
 export interface TodoCreateReturn {
   todoItemId: number;
 }
 
-export interface TodoItems {
+export interface TodoListTime {
   description: string;
-  tagIds: TagList[];
-  status: TodoStatus;
+  tagIds: number[];
+  status: TodoStatuses;
   parentId: number;
-  score: TodoScore;
+  score: TodoScores;
+  timeCreated: number;
+}
+
+export interface TodoList {
+  description: string;
+  tagIds: number[];
+  status: TodoStatuses;
+  parentId: number;
+  score: TodoScores;
 }
 
 export interface TodoListReturn {
-  todoItems: TodoItems[];
+  todoItems: TodoList[];
 }

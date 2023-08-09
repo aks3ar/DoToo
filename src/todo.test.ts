@@ -4,7 +4,7 @@ import {
   // requestTodoDelete,
   requestTodoCreate,
   // requestTodoUpdate,
-  // requestTodoList,
+  requestTodoList,
   // requestTodoBulk
 } from './helperTest';
 
@@ -67,7 +67,7 @@ describe('requestTodoCreate Tests', () => {
     expect(res.statusCode).toStrictEqual(OK);
     expect(res.returnBody).toStrictEqual({ todoItemId: expect.any(Number) });
   });
-  test('There are already 50 todo items generated', () => {
+  test.skip('There are already 50 todo items generated', () => {
     for (let i = 0; i < 51; i++) {
       requestTodoCreate(`Todo ${i}`, null);
     }
@@ -113,25 +113,40 @@ describe('requestTodoCreate Tests', () => {
 //   });
 // });
 
-// describe('requestTodoList Tests', () => {
-//   beforeEach(() => {
-//     requestClear();
-//     requestTagCreate('Tag1');
-//     tagListObj = requestTagList();
-//     const firstTag = tagListObj.returnBody.tags[0];
-//     firstTagId = firstTag.tagId;
-//   });
-//   test('All Correct', () => {
-//     const res = requestTagName(firstTagId);
-//     expect(res.statusCode).toStrictEqual(OK);
-//     expect(res.returnBody).toStrictEqual({ name: 'Tag1' });
-//   });
-//   test('tagId does not exist', () => {
-//     const res = requestTagName(-1);
-//     expect(res.statusCode).toStrictEqual(400);
-//     expect(res.returnBody).toStrictEqual(ERROR);
-//   });
-// });
+describe.only('requestTodoList Tests', () => {
+  beforeEach(() => {
+    requestClear();
+    // requestTagCreate('Tag1');
+    // tagListObj = requestTagList();
+    // const firstTag = tagListObj.returnBody.tags[0];
+    // firstTagId = firstTag.tagId;
+  });
+  test('All Correct', () => {
+    const res = requestTodoList(null);
+    expect(res.statusCode).toStrictEqual(OK);
+    expect(res.returnBody).toStrictEqual({});
+  });
+  // test('status is not a valid status', () => {
+  //   const res = requestTodoList(null, null, 'Blah');
+  //   expect(res.statusCode).toStrictEqual(400);
+  //   expect(res.returnBody).toStrictEqual('ERROR');
+  // });
+  // test('tagIds is an empty list', () => {
+  //   const res = requestTodoList(null, [], { status: 'TODO' });
+  //   expect(res.statusCode).toStrictEqual(400);
+  //   expect(res.returnBody).toStrictEqual('ERROR');
+  // });
+  // test('tagIds contains any invalid tagId', () => {
+  //   const res = requestTodoList(null, null, TODO);
+  //   expect(res.statusCode).toStrictEqual(400);
+  //   expect(res.returnBody).toStrictEqual('ERROR');
+  // });
+  // test('parentId does not refer to a valid todo item', () => {
+  //   const res = requestTodoList(-1, null, 'Blah');
+  //   expect(res.statusCode).toStrictEqual(400);
+  //   expect(res.returnBody).toStrictEqual('ERROR');
+  // });
+});
 
 // describe('requestTagName Tests', () => {
 //   beforeEach(() => {

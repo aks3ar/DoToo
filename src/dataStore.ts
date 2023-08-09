@@ -4,14 +4,14 @@ export type Tag = {
   name: string;
 }
 
-export enum TodoStatus {
+export enum TodoStatuses {
   TODO = 'TODO',
   INPROGRESS = 'INPROGRESS',
   BLOCKED = 'BLOCKED',
   DONE = 'DONE',
 }
 
-export enum TodoScore {
+export enum TodoScores {
   NA = 'NA',
   LOW = 'LOW',
   HIGH = 'HIGH',
@@ -21,10 +21,11 @@ export type Todo = {
   todoItemId: number;
   description: string;
   tagIds: number[];
-  status: TodoStatus;
+  status: TodoStatuses;
   parentId: number | null;
-  score: TodoScore;
+  score: TodoScores;
   deadline: number | null;
+  timeCreated: number;
 }
 
 export type Data = {

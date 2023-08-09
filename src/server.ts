@@ -5,6 +5,10 @@ import cors from 'cors';
 import errorHandler from 'middleware-http-errors';
 
 import {
+  TodoStatuses
+} from './dataStore';
+
+import {
   clear
 } from './clear';
 
@@ -20,7 +24,7 @@ import {
   // todoDelete,
   todoCreate,
   // todoUpdate,
-  // todoList,
+  todoList,
   // todoBulk
 } from './todo';
 
@@ -135,17 +139,17 @@ app.post('/todo/item', (req: Request, res: Response) => {
 //   res.json(response);
 // });
 
-// app.get('/todo/list', (req: Request, res: Response) => {
-//   const parentId = req.query.parentId as string;
-//   const tagIds = JSON.parse(req.query.tagIds as string) as number[];
-//   const status = req.query.status as string;
-//   const response = todoList(parentId, tagIds, status);
-//   if ('error' in response) {
-//     res.status(response.code).json({ error: response.error });
-//     return;
-//   }
-//   res.json(response);
-// });
+app.get('/todo/list', (req: Request, res: Response) => {
+  const parentId = parseInt(req.query.parentId as string);
+  const tagIds = JSON.parse(req.query.tagIds as string) as number[];
+  const status = req.query.status as TodoStatuses;
+  const response = todoList(parentId, tagIds, status);
+  if ('error' in response) {
+    res.status(response.code).json({ error: response.error });
+    return;
+  }
+  res.json(response);
+});
 
 // app.post('/todo/item/bulk', (req: Request, res: Response) => {
 //   const { bulkString } = req.body;

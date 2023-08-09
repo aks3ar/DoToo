@@ -5,9 +5,11 @@ import {
   TodoDetailsReturn,
   TodoCreateReturn,
   NewTodo,
-  TodoStatus,
-  TodoScore,
-  // TodoListReturn
+  TodoStatuses,
+  TodoScores,
+  TodoListTime,
+  // TodoList,
+  TodoListReturn
 } from './interface';
 
 /**
@@ -78,14 +80,17 @@ export function todoCreate(description: string, parentId: number) : TodoCreateRe
     idExists = data.tags.some(tag => tag.tagId === randomId);
   } while (idExists);
 
+  const unixTime = Math.floor(Date.now());
+
   const newTodo : NewTodo = {
     todoItemId: randomId,
     description: description,
     tagIds: [],
     parentId: parentId,
-    status: TodoStatus.TODO,
+    status: TodoStatuses.TODO,
     deadline: null,
-    score: TodoScore.NA
+    score: TodoScores.NA,
+    timeCreated: unixTime
   };
 
   data.todos.push(newTodo);
@@ -94,49 +99,49 @@ export function todoCreate(description: string, parentId: number) : TodoCreateRe
   return { todoItemId: randomId };
 }
 
-// export function todoList(parentId: number | null, tagIds: number[], status: TodoStatus) : TodoListReturn | Error {
-//   const data = getData();
-//   const lowerBound = 1;
-//   const todoLimit = 50;
+export function todoList(parentId: number | null | null, tagIds?: number[] | null, status?: TodoStatuses | null) : TodoListReturn | Error {
+  const data = getData();
+  const statuses = Object.values(TodoStatuses);
 
-//   if (data.todos.length > todoLimit) {
-//     throw HTTPError(400, 'There are already 50 todo items generated');
-//   }
+  if (status !== null || !statuses.includes(status)) {
+    throw HTTPError(400, 'status is not a valid status');
+  }
 
-//   if (description.length < lowerBound) {
-//     throw HTTPError(400, 'Description is less than 1 character');
-//   }
+  if (tagIds !== null || tagIds.length === 0 || tagIds.some(tagId => !data.tags.some(tag => tag.tagId === tagId))) {
+    throw HTTPError(400, 'tagIds is an empty list or tagIds contains any invalid tagId');
+  }
 
-//   if (parentId !== null && !data.todos.some(item => item.todoItemId === parentId)) {
-//     throw HTTPError(400, 'parentId is not a valid todoItemId.');
-//   }
+  if (/* parentId !== null || */ !data.todos.some(todo => todo.todoItemId === parentId)) {
+    throw HTTPError(400, 'parentId does not refer to a valid todo item');
+  }
 
-//   const lowerCaseDescription = description.toLowerCase();
-//   const descriptionExist = data.todos.some(todo => todo.description.toLowerCase() === lowerCaseDescription && todo.parentId === parentId);
-//   if (descriptionExist) {
-//     throw HTTPError(400, 'A todo item of this description, that shares a common immediate parent task (or a null parent), already exists');
-//   }
+  let todoList: TodoListTime[] = data.todos;
 
-//   let randomId: number;
-//   let idExists;
+  if (tagIds !== null) {
+    todoList = todoList.filter(todo => arrayEquals(todo.tagIds, tagIds));
+  }
 
-//   do {
-//     randomId = Math.floor(1000 + Math.random() * 9000);
-//     idExists = data.tags.some(tag => tag.tagId === randomId);
-//   } while (idExists);
+  if (status !== null) {
+    todoList = todoList.filter(todo => todo.status === status);
+  }
 
-//   const newTodo : NewTodo = {
-//     todoItemId: randomId,
-//     description: description,
-//     tagIds: [],
-//     parentId: parentId,
-//     status: TodoStatus.TODO,
-//     deadline: null,
-//     score: TodoScore.NA
-//   };
+  if (parentId !== null) {
+    todoList = todoList.filter(todo => todo.parentId === parentId);
+  }
 
-//   data.todos.push(newTodo);
-//   setData(data);
+  todoList.sort((a, b) => b.timeCreated - a.timeCreated);
 
-//   return { todoItemId: randomId };
-// }
+  // const filteredTodoList: TodoList[] = {
+  //   description: data.todos.;
+  //   tagIds: number[];
+  //   status: TodoStatuses;
+  //   parentId: number;
+  //   score: TodoScores;
+  // };
+
+  return { todoItems: todoList };
+}
+
+function arrayEquals(a: number[], b: number[]): boolean {
+  return a.length === b.length && a.every((value, index) => value === b[index]);
+}

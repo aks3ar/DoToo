@@ -1,5 +1,6 @@
 import request, { HttpVerb } from 'sync-request';
 import { url, port } from './config.json';
+import { TodoStatuses } from './dataStore';
 
 const SERVER_URL = `${url}:${port}`;
 
@@ -55,7 +56,7 @@ export function requestTodoUpdate(todoItemId: number, description: string, tagId
   return requestHelper('PUT', '/todo/item', { todoItemId, description, tagIds: JSON.stringify(tagIds), status, parentId, deadline }, { });
 }
 
-export function requestTodoList(parentId: number, tagIds: number[], status: string) {
+export function requestTodoList(parentId: number, tagIds?: number[], status?: TodoStatuses) {
   return requestHelper('GET', '/todo/list', { parentId, tagIds: JSON.stringify(tagIds), status }, { });
 }
 
