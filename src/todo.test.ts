@@ -17,6 +17,7 @@ const ERROR = { error: expect.any(String) };
 
 let todoItemIdObj: any;
 let todoDetailsObj: any;
+// let todoItemIdObj2: any;
 
 describe('requestTodoDetails Tests', () => {
   beforeEach(() => {
@@ -63,7 +64,7 @@ describe('requestTodoDetails Tests', () => {
 //   });
 // });
 
-describe.only('requestTodoCreate Tests', () => {
+describe('requestTodoCreate Tests', () => {
   beforeEach(() => {
     requestClear();
   });
@@ -132,41 +133,77 @@ describe('requestTodoList Tests', () => {
   beforeEach(() => {
     requestClear();
     todoItemIdObj = requestTodoCreate('description', null);
+    // todoItemIdObj2 = requestTodoCreate('description1', todoItemIdObj.returnBody.todoItemId);
     todoDetailsObj = requestTodoDetails(todoItemIdObj.returnBody.todoItemId);
-    // requestTagCreate('Tag1');
-    // tagListObj = requestTagList();
-    // const firstTag = tagListObj.returnBody.tags[0];
-    // firstTagId = firstTag.tagId;
   });
   describe('All Correct', () => {
     // beforeEach(() => {});
-    test('All Correct', () => {
-      const res = requestTodoList(null, [], TodoStatuses.TODO);
+    test('not a null parent', () => {
+      const res = requestTodoList(todoItemIdObj.returnBody.todoItemId, undefined, undefined);
+      expect(res.statusCode).toStrictEqual(OK);
+      expect(res.returnBody).toStrictEqual({
+        todoItems: [
+          {
+            description: todoDetailsObj.returnBody.description,
+            parentId: todoDetailsObj.returnBody.parentId,
+            score: todoDetailsObj.returnBody.score,
+            status: todoDetailsObj.returnBody.status,
+            tagIds: todoDetailsObj.returnBody.tagIds,
+          },
+        ],
+      });
+    });
+    test.skip('null parents', () => {
+      const res = requestTodoList(null);
       expect(res.statusCode).toStrictEqual(OK);
       expect(res.returnBody).toStrictEqual({});
     });
-    // test('requestTagList Check', () => {});
+    test.skip('parents and tagIds', () => {
+      // requestTagCreate('Tag1');
+      // tagListObj = requestTagList();
+      // const firstTag = tagListObj.returnBody.tags[0];
+      // firstTagId = firstTag.tagId;
+      const res = requestTodoList(todoItemIdObj.returnBody.todoItemId, [], undefined);
+      expect(res.statusCode).toStrictEqual(OK);
+      expect(res.returnBody).toStrictEqual({});
+    });
+    test('parents and status', () => {
+      const res = requestTodoList(todoItemIdObj.returnBody.todoItemId, undefined, TodoStatuses.TODO);
+      expect(res.statusCode).toStrictEqual(OK);
+      expect(res.returnBody).toStrictEqual({
+        todoItems: [
+          {
+            description: todoDetailsObj.returnBody.description,
+            parentId: todoDetailsObj.returnBody.parentId,
+            score: todoDetailsObj.returnBody.score,
+            status: todoDetailsObj.returnBody.status,
+            tagIds: todoDetailsObj.returnBody.tagIds,
+          },
+        ],
+      });
+    });
   });
-  // test('status is not a valid status', () => {
-  //   const res = requestTodoList(null, null, 'Blah');
-  //   expect(res.statusCode).toStrictEqual(400);
-  //   expect(res.returnBody).toStrictEqual('ERROR');
-  // });
-  // test('tagIds is an empty list', () => {
-  //   const res = requestTodoList(null, [], { status: 'TODO' });
-  //   expect(res.statusCode).toStrictEqual(400);
-  //   expect(res.returnBody).toStrictEqual('ERROR');
-  // });
-  // test('tagIds contains any invalid tagId', () => {
-  //   const res = requestTodoList(null, null, TODO);
-  //   expect(res.statusCode).toStrictEqual(400);
-  //   expect(res.returnBody).toStrictEqual('ERROR');
-  // });
-  // test('parentId does not refer to a valid todo item', () => {
-  //   const res = requestTodoList(-1, null, 'Blah');
-  //   expect(res.statusCode).toStrictEqual(400);
-  //   expect(res.returnBody).toStrictEqual('ERROR');
-  // });
+  test('status is not a valid status', () => {
+    const invalidStatus = 'INVALID_STATUS' as TodoStatuses;
+    const res = requestTodoList(todoItemIdObj.returnBody.todoItemId, [], invalidStatus);
+    expect(res.statusCode).toStrictEqual(400);
+    expect(res.returnBody).toStrictEqual(ERROR);
+  });
+  test.skip('tagIds is an empty list', () => {
+    const res = requestTodoList(todoItemIdObj.returnBody.todoItemId, [], undefined);
+    expect(res.statusCode).toStrictEqual(400);
+    expect(res.returnBody).toStrictEqual('ERROR');
+  });
+  test.skip('tagIds contains any invalid tagId', () => {
+    const res = requestTodoList(todoItemIdObj.returnBody.todoItemId, [], undefined);
+    expect(res.statusCode).toStrictEqual(400);
+    expect(res.returnBody).toStrictEqual('ERROR');
+  });
+  test('parentId does not refer to a valid todo item', () => {
+    const res = requestTodoList(-1, [], undefined);
+    expect(res.statusCode).toStrictEqual(400);
+    expect(res.returnBody).toStrictEqual(ERROR);
+  });
 });
 
 // describe('requestTagName Tests', () => {

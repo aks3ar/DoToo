@@ -8,7 +8,7 @@ import {
   TodoStatuses,
   TodoScores,
   TodoListTime,
-  // TodoList,
+  TodoList,
   TodoListReturn
 } from './interface';
 
@@ -49,7 +49,7 @@ export function todoDetails(todoItemId: number) : TodoDetailsReturn | Error {
   * @returns {} - Returns an empty object.
   *
 */
-export function todoCreate(description: string, parentId: any | number | null) : TodoCreateReturn | Error {
+export function todoCreate(description: string, parentId: number | null) : TodoCreateReturn | Error {
   const data = getData();
   const lowerBound = 1;
   const todoLimit = 50;
@@ -102,7 +102,7 @@ export function todoCreate(description: string, parentId: any | number | null) :
   return { todoItemId: randomId };
 }
 
-export function todoList(parentId: any | number | null, tagIds?: number[] | null, status?: TodoStatuses | null) : TodoListReturn | Error {
+export function todoList(parentId: number | null, tagIds?: number[] | null, status?: TodoStatuses | null) : TodoListReturn | Error {
   const data = getData();
   const statuses = Object.values(TodoStatuses);
 
@@ -118,17 +118,13 @@ export function todoList(parentId: any | number | null, tagIds?: number[] | null
   //   }
   // }
 
-  console.log(data.todos)
-  console.log(parentId)
-  console.log(null)
-
-  console.log(data.todos.some(todo => todo.parentId === parentId))
-
-  if (parentId !== null || !data.todos.some(todo => todo.todoItemId === parentId)) {
-    throw HTTPError(400, 'parentId does not refer to a valid todo item');
+  if (parentId !== null) {
+    if (!data.todos.some(todo => todo.todoItemId === parentId)) {
+      throw HTTPError(400, 'parentId does not refer to a valid todo item');
+    }
   }
 
-  let todoList: TodoListTime[] = data.todos;
+  let todoList: TodoListTime[] = [...data.todos];
 
   if (tagIds !== null) {
     todoList = todoList.filter(todo => arrayEquals(todo.tagIds, tagIds));
@@ -139,20 +135,14 @@ export function todoList(parentId: any | number | null, tagIds?: number[] | null
   }
 
   if (parentId !== null) {
-    todoList = todoList.filter(todo => todo.parentId === parentId);
+    todoList = todoList.filter(todo => todo.todoItemId === parentId);
   }
 
   todoList.sort((a, b) => b.timeCreated - a.timeCreated);
 
-  // const filteredTodoList: TodoList[] = {
-  //   description: data.todos.;
-  //   tagIds: number[];
-  //   status: TodoStatuses;
-  //   parentId: number;
-  //   score: TodoScores;
-  // };
+  const filteredTodoList: TodoList[] = todoList.map(({ timeCreated, todoItemId, deadline, ...rest }) => rest);
 
-  return { todoItems: todoList };
+  return { todoItems: filteredTodoList };
 }
 
 function arrayEquals(a: number[], b: number[]): boolean {

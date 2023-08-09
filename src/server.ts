@@ -140,10 +140,10 @@ app.post('/todo/item', (req: Request, res: Response) => {
 // });
 
 app.get('/todo/list', (req: Request, res: Response) => {
-  let parentId: any | number | null = null;
+  let parentId: number | null = null;
 
   if (req.query.parentId !== undefined && req.query.parentId !== null) {
-    parentId = req.query.parentId as any;
+    parentId = parseInt(req.query.parentId as string);
   }
 
   // Parse tagIds if it's provided, otherwise set it to null
@@ -162,7 +162,7 @@ app.get('/todo/list', (req: Request, res: Response) => {
   if (req.query.status) {
     status = req.query.status as TodoStatuses;
     if (!Object.values(TodoStatuses).includes(status)) {
-      res.status(400).json({ error: 'Invalid status' });
+      res.status(400).json({ error: 'status is not a valid status' });
       return;
     }
   }
@@ -174,6 +174,7 @@ app.get('/todo/list', (req: Request, res: Response) => {
   }
   res.json(response);
 });
+
 // app.post('/todo/item/bulk', (req: Request, res: Response) => {
 //   const { bulkString } = req.body;
 //   const response = todoBulk(bulkString);
