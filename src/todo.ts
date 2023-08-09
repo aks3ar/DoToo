@@ -41,7 +41,55 @@ export function todoDetails(todoItemId: number) : TodoDetailsReturn | Error {
 }
 
 /**
-  * Get a list of all tags
+  * Delete a todo item
+  *
+  * @param {}  - An empty object
+  * ...
+  *
+  * @returns {} - Returns an empty object.
+  *
+*/
+export function todoDelete(todoItemId: number) : object | Error {
+  const data = getData();
+  // console.log('initially', data.todos);
+
+  const findTodoItemId = data.todos.find(todo => todo.todoItemId === todoItemId);
+  if (!findTodoItemId) {
+    throw HTTPError(400, 'todoItemId is not valid');
+  }
+
+  doTodoDelete(todoItemId);
+
+  // console.log('after deletion', data.todos);
+  return { };
+}
+
+function doTodoDelete(todoItemId: number) {
+  const data = getData();
+  const itemIndex = data.todos.findIndex(todo => todo.todoItemId === todoItemId);
+  let deletedItem: any;
+
+  if (itemIndex !== -1) {
+    deletedItem = data.todos.splice(itemIndex, 1)[0];
+    const childrenIds = data.todos.filter(todo => todo.parentId === todoItemId).map(todo => todo.todoItemId);
+    for (const childId of childrenIds) {
+      doTodoDelete(childId);
+    }
+
+    if (deletedItem) {
+      const deletedTagIds = deletedItem.tagIds;
+      for (const tagId of deletedTagIds) {
+        const tagIndex = data.tags.findIndex(tag => tag.tagId === tagId);
+        if (tagIndex !== -1) {
+          data.tags.splice(tagIndex, 1);
+        }
+      }
+    }
+  }
+}
+
+/**
+  * Create a new todo item
   *
   * @param {}  - An empty object
   * ...

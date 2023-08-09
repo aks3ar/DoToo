@@ -21,7 +21,7 @@ import {
 
 import {
   todoDetails,
-  // todoDelete,
+  todoDelete,
   todoCreate,
   // todoUpdate,
   todoList,
@@ -109,15 +109,15 @@ app.get('/todo/item', (req: Request, res: Response) => {
   res.json(response);
 });
 
-// app.delete('/todo/item', (req: Request, res: Response) => {
-//   const todoItemId = parseInt(req.query.todoItemId as string);
-//   const response = todoDelete(todoItemId);
-//   if ('error' in response) {
-//     res.status(response.code).json({ error: response.error });
-//     return;
-//   }
-//   res.json(response);
-// });
+app.delete('/todo/item', (req: Request, res: Response) => {
+  const todoItemId = parseInt(req.query.todoItemId as string);
+  const response = todoDelete(todoItemId);
+  if ('error' in response) {
+    res.status(response.code).json({ error: response.error });
+    return;
+  }
+  res.json(response);
+});
 
 app.post('/todo/item', (req: Request, res: Response) => {
   const { description, parentId } = req.body;
