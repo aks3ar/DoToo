@@ -25,7 +25,6 @@ export enum TodoStatuses {
   INPROGRESS = 'INPROGRESS',
   BLOCKED = 'BLOCKED',
   DONE = 'DONE',
-
 }
 
 export enum TodoScores {
@@ -38,7 +37,7 @@ export interface TodoDetailsReturn {
   description: string;
   tagIds: number[];
   status: TodoStatuses;
-  parentId: number;
+  parentId: any | number | null;
   score: TodoScores;
 }
 
@@ -46,7 +45,7 @@ export interface NewTodo {
   todoItemId: number;
   description: string;
   tagIds: number[];
-  parentId: number | null;
+  parentId: any | number | null;
   status: TodoStatuses;
   deadline: number | null;
   score: TodoScores;
@@ -61,7 +60,7 @@ export interface TodoListTime {
   description: string;
   tagIds: number[];
   status: TodoStatuses;
-  parentId: number;
+  parentId: any | number | null;
   score: TodoScores;
   timeCreated: number;
 }
@@ -70,7 +69,7 @@ export interface TodoList {
   description: string;
   tagIds: number[];
   status: TodoStatuses;
-  parentId: number;
+  parentId: any | number | null;
   score: TodoScores;
 }
 

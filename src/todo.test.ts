@@ -8,10 +8,15 @@ import {
   // requestTodoBulk
 } from './helperTest';
 
+import {
+  TodoStatuses
+} from './interface';
+
 const OK = 200;
 const ERROR = { error: expect.any(String) };
 
 let todoItemIdObj: any;
+let todoDetailsObj: any;
 
 describe('requestTodoDetails Tests', () => {
   beforeEach(() => {
@@ -58,14 +63,23 @@ describe('requestTodoDetails Tests', () => {
 //   });
 // });
 
-describe('requestTodoCreate Tests', () => {
+describe.only('requestTodoCreate Tests', () => {
   beforeEach(() => {
     requestClear();
   });
-  test('All Correct', () => {
-    const res = requestTodoCreate('description', null);
-    expect(res.statusCode).toStrictEqual(OK);
-    expect(res.returnBody).toStrictEqual({ todoItemId: expect.any(Number) });
+  describe('All Correct', () => {
+    test('null parent', () => {
+      const res = requestTodoCreate('description', null);
+      expect(res.statusCode).toStrictEqual(OK);
+      expect(res.returnBody).toStrictEqual({ todoItemId: expect.any(Number) });
+    });
+    test('not null parent', () => {
+      requestTodoCreate('description', null);
+      todoItemIdObj = requestTodoCreate('description', null);
+      const res = requestTodoCreate('descriptions', todoItemIdObj.returnBody.todoItemId);
+      expect(res.statusCode).toStrictEqual(OK);
+      expect(res.returnBody).toStrictEqual({ todoItemId: expect.any(Number) });
+    });
   });
   test.skip('There are already 50 todo items generated', () => {
     for (let i = 0; i < 51; i++) {
@@ -80,14 +94,15 @@ describe('requestTodoCreate Tests', () => {
     expect(res.statusCode).toStrictEqual(400);
     expect(res.returnBody).toStrictEqual(ERROR);
   });
-  test('parentId is not a valid todoItemId.', () => {
-    const res = requestTodoCreate('description', undefined);
+  test('parentId does not refer to a different, existing todo item.', () => {
+    const res = requestTodoCreate('description', -1);
     expect(res.statusCode).toStrictEqual(400);
     expect(res.returnBody).toStrictEqual(ERROR);
   });
   test('A todo item of this description, that shares a common immediate parent task (or a null parent), already exists.', () => {
-    requestTodoCreate('description', null);
-    const res = requestTodoCreate('description', null);
+    todoItemIdObj = requestTodoCreate('description', null);
+    todoDetailsObj = requestTodoDetails(todoItemIdObj.returnBody.todoItemId);
+    const res = requestTodoCreate(todoDetailsObj.returnBody.description, todoItemIdObj.returnBody.todoItemId);
     expect(res.statusCode).toStrictEqual(400);
     expect(res.returnBody).toStrictEqual(ERROR);
   });
@@ -116,15 +131,21 @@ describe('requestTodoCreate Tests', () => {
 describe('requestTodoList Tests', () => {
   beforeEach(() => {
     requestClear();
+    todoItemIdObj = requestTodoCreate('description', null);
+    todoDetailsObj = requestTodoDetails(todoItemIdObj.returnBody.todoItemId);
     // requestTagCreate('Tag1');
     // tagListObj = requestTagList();
     // const firstTag = tagListObj.returnBody.tags[0];
     // firstTagId = firstTag.tagId;
   });
-  test('All Correct', () => {
-    const res = requestTodoList(null);
-    expect(res.statusCode).toStrictEqual(OK);
-    expect(res.returnBody).toStrictEqual({});
+  describe('All Correct', () => {
+    // beforeEach(() => {});
+    test('All Correct', () => {
+      const res = requestTodoList(null, [], TodoStatuses.TODO);
+      expect(res.statusCode).toStrictEqual(OK);
+      expect(res.returnBody).toStrictEqual({});
+    });
+    // test('requestTagList Check', () => {});
   });
   // test('status is not a valid status', () => {
   //   const res = requestTodoList(null, null, 'Blah');

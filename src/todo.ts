@@ -49,7 +49,7 @@ export function todoDetails(todoItemId: number) : TodoDetailsReturn | Error {
   * @returns {} - Returns an empty object.
   *
 */
-export function todoCreate(description: string, parentId: number) : TodoCreateReturn | Error {
+export function todoCreate(description: string, parentId: any | number | null) : TodoCreateReturn | Error {
   const data = getData();
   const lowerBound = 1;
   const todoLimit = 50;
@@ -62,14 +62,17 @@ export function todoCreate(description: string, parentId: number) : TodoCreateRe
     throw HTTPError(400, 'Description is less than 1 character');
   }
 
-  if (parentId !== null && !data.todos.some(item => item.todoItemId === parentId)) {
-    throw HTTPError(400, 'parentId is not a valid todoItemId.');
-  }
-
-  const lowerCaseDescription = description.toLowerCase();
-  const descriptionExist = data.todos.some(todo => todo.description.toLowerCase() === lowerCaseDescription && todo.parentId === parentId);
-  if (descriptionExist) {
-    throw HTTPError(400, 'A todo item of this description, that shares a common immediate parent task (or a null parent), already exists');
+  const findTodoItemId = data.todos.find(item => item.todoItemId === parentId);
+  if (parentId !== null) {
+    if (!findTodoItemId) {
+      throw HTTPError(400, 'parentId does not refer to a different, existing todo item.');
+    }
+    const lowerCaseDescription = description.toLowerCase();
+    const parent = data.todos.find((parent) => parent.todoItemId === parentId);
+    const descriptionExist = parent.description.toLowerCase() === lowerCaseDescription;
+    if (descriptionExist) {
+      throw HTTPError(400, 'A todo item of this description, that shares a common immediate parent task (or a null parent), already exists');
+    }
   }
 
   let randomId: number;
@@ -99,19 +102,29 @@ export function todoCreate(description: string, parentId: number) : TodoCreateRe
   return { todoItemId: randomId };
 }
 
-export function todoList(parentId: number | null | null, tagIds?: number[] | null, status?: TodoStatuses | null) : TodoListReturn | Error {
+export function todoList(parentId: any | number | null, tagIds?: number[] | null, status?: TodoStatuses | null) : TodoListReturn | Error {
   const data = getData();
   const statuses = Object.values(TodoStatuses);
 
-  if (status !== null || !statuses.includes(status)) {
-    throw HTTPError(400, 'status is not a valid status');
+  if (status !== null) {
+    if (!statuses.includes(status)) {
+      throw HTTPError(400, 'status is not a valid status');
+    }
   }
 
-  if (tagIds !== null || tagIds.length === 0 || tagIds.some(tagId => !data.tags.some(tag => tag.tagId === tagId))) {
-    throw HTTPError(400, 'tagIds is an empty list or tagIds contains any invalid tagId');
-  }
+  // if (tagIds !== null) {
+  //   if (tagIds.length === 0 || tagIds.some(tagId => !data.tags.some(tag => tag.tagId === tagId))) {
+  //     throw HTTPError(400, 'tagIds is an empty list or tagIds contains any invalid tagId');
+  //   }
+  // }
 
-  if (/* parentId !== null || */ !data.todos.some(todo => todo.todoItemId === parentId)) {
+  console.log(data.todos)
+  console.log(parentId)
+  console.log(null)
+
+  console.log(data.todos.some(todo => todo.parentId === parentId))
+
+  if (parentId !== null || !data.todos.some(todo => todo.todoItemId === parentId)) {
     throw HTTPError(400, 'parentId does not refer to a valid todo item');
   }
 

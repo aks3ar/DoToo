@@ -1,20 +1,11 @@
+import {
+  TodoStatuses,
+  TodoScores
+} from './interface';
 
 export type Tag = {
   tagId: number;
   name: string;
-}
-
-export enum TodoStatuses {
-  TODO = 'TODO',
-  INPROGRESS = 'INPROGRESS',
-  BLOCKED = 'BLOCKED',
-  DONE = 'DONE',
-}
-
-export enum TodoScores {
-  NA = 'NA',
-  LOW = 'LOW',
-  HIGH = 'HIGH',
 }
 
 export type Todo = {
@@ -22,7 +13,7 @@ export type Todo = {
   description: string;
   tagIds: number[];
   status: TodoStatuses;
-  parentId: number | null;
+  parentId: any | number | null;
   score: TodoScores;
   deadline: number | null;
   timeCreated: number;

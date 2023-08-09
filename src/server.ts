@@ -6,7 +6,7 @@ import errorHandler from 'middleware-http-errors';
 
 import {
   TodoStatuses
-} from './dataStore';
+} from './interface';
 
 import {
   clear
@@ -140,9 +140,33 @@ app.post('/todo/item', (req: Request, res: Response) => {
 // });
 
 app.get('/todo/list', (req: Request, res: Response) => {
-  const parentId = parseInt(req.query.parentId as string);
-  const tagIds = JSON.parse(req.query.tagIds as string) as number[];
-  const status = req.query.status as TodoStatuses;
+  let parentId: any | number | null = null;
+
+  if (req.query.parentId !== undefined && req.query.parentId !== null) {
+    parentId = req.query.parentId as any;
+  }
+
+  // Parse tagIds if it's provided, otherwise set it to null
+  let tagIds: number[] | null = null;
+  if (req.query.tagIds) {
+    try {
+      tagIds = JSON.parse(req.query.tagIds as string) as number[];
+    } catch (error) {
+      res.status(400).json({ error: 'Invalid tagIds format' });
+      return;
+    }
+  }
+
+  // Set status if it's provided, otherwise set it to null
+  let status: TodoStatuses | null = null;
+  if (req.query.status) {
+    status = req.query.status as TodoStatuses;
+    if (!Object.values(TodoStatuses).includes(status)) {
+      res.status(400).json({ error: 'Invalid status' });
+      return;
+    }
+  }
+
   const response = todoList(parentId, tagIds, status);
   if ('error' in response) {
     res.status(response.code).json({ error: response.error });
@@ -150,7 +174,6 @@ app.get('/todo/list', (req: Request, res: Response) => {
   }
   res.json(response);
 });
-
 // app.post('/todo/item/bulk', (req: Request, res: Response) => {
 //   const { bulkString } = req.body;
 //   const response = todoBulk(bulkString);

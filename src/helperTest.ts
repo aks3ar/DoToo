@@ -1,6 +1,6 @@
 import request, { HttpVerb } from 'sync-request';
 import { url, port } from './config.json';
-import { TodoStatuses } from './dataStore';
+import { TodoStatuses } from './interface';
 
 const SERVER_URL = `${url}:${port}`;
 
@@ -48,7 +48,7 @@ export function requestTodoDelete(todoItemId: number) {
   return requestHelper('DELETE', '/todo/item', { todoItemId }, { });
 }
 
-export function requestTodoCreate(description: string, parentId: number) {
+export function requestTodoCreate(description: string, parentId: any | number | null) {
   return requestHelper('POST', '/todo/item', { description, parentId }, { });
 }
 
@@ -56,7 +56,7 @@ export function requestTodoUpdate(todoItemId: number, description: string, tagId
   return requestHelper('PUT', '/todo/item', { todoItemId, description, tagIds: JSON.stringify(tagIds), status, parentId, deadline }, { });
 }
 
-export function requestTodoList(parentId: number, tagIds?: number[], status?: TodoStatuses) {
+export function requestTodoList(parentId: any | number | null, tagIds?: number[] | null, status?: TodoStatuses | null) {
   return requestHelper('GET', '/todo/list', { parentId, tagIds: JSON.stringify(tagIds), status }, { });
 }
 
