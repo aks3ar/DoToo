@@ -1,7 +1,7 @@
-import {
-  TodoStatuses,
-  TodoScores
-} from './interface';
+// import {
+//   TodoStatuses,
+//   TodoScores
+// } from './interface';
 
 export type Tag = {
   tagId: number;
@@ -9,12 +9,12 @@ export type Tag = {
 }
 
 export type Todo = {
-  todoItemId: number;
+  todoItemId: any;
   description: string;
   tagIds: number[];
-  status: TodoStatuses;
+  status: string;
   parentId: number | null;
-  score: TodoScores;
+  score: string;
   deadline: number | null;
   timeCreated: number;
 }

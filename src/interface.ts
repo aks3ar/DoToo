@@ -36,43 +36,43 @@ export enum TodoScores {
 export interface TodoDetailsReturn {
   description: string;
   tagIds: number[];
-  status: TodoStatuses;
+  status: string;
   parentId: number | null;
-  score: TodoScores;
+  score: string;
 }
 
 export interface NewTodo {
-  todoItemId: number;
+  todoItemId: any;
   description: string;
   tagIds: number[];
   parentId: number | null;
-  status: TodoStatuses;
+  status: string;
   deadline: number | null;
-  score: TodoScores;
+  score: string;
   timeCreated: number;
 }
 
 export interface TodoCreateReturn {
-  todoItemId: number;
+  todoItemId: any;
 }
 
 export interface TodoListTime {
-  todoItemId: number;
-  deadline: number;
+  todoItemId: any;
+  deadline: number | null;
   description: string;
   tagIds: number[];
-  status: TodoStatuses;
+  status: string;
   parentId: number | null;
-  score: TodoScores;
+  score: string;
   timeCreated: number;
 }
 
 export interface TodoList {
   description: string;
   tagIds: number[];
-  status: TodoStatuses;
+  status: string;
   parentId: number | null;
-  score: TodoScores;
+  score: string;
 }
 
 export interface TodoListReturn {

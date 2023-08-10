@@ -4,9 +4,9 @@ import {
   Error,
   TodoDetailsReturn,
   TodoCreateReturn,
-  NewTodo,
-  TodoStatuses,
-  TodoScores,
+  // NewTodo,
+  // TodoStatuses,
+  // TodoScores,
   TodoListTime,
   TodoList,
   TodoListReturn
@@ -21,7 +21,7 @@ import {
   * @returns {} - Returns an empty object.
   *
 */
-export function todoDetails(todoItemId: number) : TodoDetailsReturn | Error {
+export function todoDetails(todoItemId: number): TodoDetailsReturn | Error {
   const data = getData();
 
   const findTodoItemId = data.todos.find(todo => todo.todoItemId === todoItemId);
@@ -29,7 +29,7 @@ export function todoDetails(todoItemId: number) : TodoDetailsReturn | Error {
     throw HTTPError(400, 'todoItemId is not valid');
   }
 
-  const todoDetails : TodoDetailsReturn = {
+  const todoDetails: TodoDetailsReturn = {
     description: findTodoItemId.description,
     tagIds: findTodoItemId.tagIds,
     status: findTodoItemId.status,
@@ -49,7 +49,7 @@ export function todoDetails(todoItemId: number) : TodoDetailsReturn | Error {
   * @returns {} - Returns an empty object.
   *
 */
-export function todoDelete(todoItemId: number) : object | Error {
+export function todoDelete(todoItemId: number): object | Error {
   const data = getData();
   // console.log('initially', data.todos);
 
@@ -61,7 +61,7 @@ export function todoDelete(todoItemId: number) : object | Error {
   doTodoDelete(todoItemId);
 
   // console.log('after deletion', data.todos);
-  return { };
+  return {};
 }
 
 function doTodoDelete(todoItemId: number) {
@@ -97,7 +97,7 @@ function doTodoDelete(todoItemId: number) {
   * @returns {} - Returns an empty object.
   *
 */
-export function todoCreate(description: string, parentId: number | null) : TodoCreateReturn | Error {
+export function todoCreate(description: string, parentId: number | null): TodoCreateReturn | Error {
   const data = getData();
   const lowerBound = 1;
   const todoLimit = 50;
@@ -110,13 +110,13 @@ export function todoCreate(description: string, parentId: number | null) : TodoC
     throw HTTPError(400, 'Description is less than 1 character');
   }
 
-  const findTodoItemId = data.todos.find(item => item.todoItemId === parentId);
   if (parentId !== null) {
-    if (!findTodoItemId) {
+    const parent = data.todos.find((parent) => parent.todoItemId === parentId);
+    if (!parent) {
       throw HTTPError(400, 'parentId does not refer to a different, existing todo item.');
     }
+
     const lowerCaseDescription = description.toLowerCase();
-    const parent = data.todos.find((parent) => parent.todoItemId === parentId);
     const descriptionExist = parent.description.toLowerCase() === lowerCaseDescription;
     if (descriptionExist) {
       throw HTTPError(400, 'A todo item of this description, that shares a common immediate parent task (or a null parent), already exists');
@@ -133,14 +133,14 @@ export function todoCreate(description: string, parentId: number | null) : TodoC
 
   const unixTime = Math.floor(Date.now());
 
-  const newTodo : NewTodo = {
+  const newTodo: any = {
     todoItemId: randomId,
     description: description,
     tagIds: [],
     parentId: parentId,
-    status: TodoStatuses.TODO,
+    status: 'TODO',
     deadline: null,
-    score: TodoScores.NA,
+    score: 'NA',
     timeCreated: unixTime
   };
 
@@ -150,9 +150,117 @@ export function todoCreate(description: string, parentId: number | null) : TodoC
   return { todoItemId: randomId };
 }
 
-export function todoList(parentId: number | null, tagIds?: number[] | null, status?: TodoStatuses | null) : TodoListReturn | Error {
+export function todoUpdate(todoItemId: any, description: string, tagIds: number[], status: string, parentId: number | null, deadline: number | null): object | Error {
   const data = getData();
-  const statuses = Object.values(TodoStatuses);
+  const lowerBound = 1;
+
+  if (isNaN(todoItemId)) {
+    throw HTTPError(400, 'todoItemId is not valid');
+  }
+
+  if (parentId === todoItemId) {
+    throw HTTPError(400, 'parentId refers to this todo list items ID');
+  }
+
+  if (description.length < lowerBound) {
+    throw HTTPError(400, 'Description is less than 1 character');
+  }
+
+  const parent = data.todos.find((todo) => todo.todoItemId === parentId);
+  if (parent) {
+    const lowerCaseDescription = description.toLowerCase();
+    const descriptionExist = parent.description.toLowerCase() === lowerCaseDescription;
+    if (descriptionExist) {
+      throw HTTPError(400, 'A todo item of this description, that shares a common immediate parent task (or a null parent), already exists');
+    }
+  }
+
+  const statuses = ['TODO', 'INPROGRESS', 'BLOCKED', 'DONE'];
+  if (!statuses.includes(status)) {
+    throw HTTPError(400, 'status is not a valid enum of statuses');
+  }
+
+  const validTagIds = data.tags.map(tag => tag.tagId);
+  for (const tagId of tagIds) {
+    if (!validTagIds.includes(tagId)) {
+      throw HTTPError(400, 'tagIds contains any invalid tagIds');
+    }
+  }
+
+  if (parentId !== null) {
+    if (!data.todos.some(todo => todo.todoItemId === parentId)) {
+      throw HTTPError(400, 'parentId is not null and does not refer to an exiting todoItemId');
+    }
+  }
+
+  if (data.todos.length > 3) {
+    if (cycleCheck(todoItemId, parentId)) {
+      throw HTTPError(400, 'parentId would create a cycle in the todo list structure');
+    }
+  }
+
+  if (deadline < 0 || deadline > Math.pow(2, 32) - 1) {
+    throw HTTPError(400, 'deadline is not null and is not a valid unix timestamp');
+  }
+
+  const todoToUpdate = data.todos.find(todo => todo.todoItemId === todoItemId);
+  const timeNow = Math.floor(Date.now() / 1000);
+  const early = timeNow < deadline;
+  const late = deadline < timeNow;
+  const noDeadline = deadline === null;
+
+  if (todoToUpdate.status !== status && todoToUpdate.deadline !== deadline) {
+    if (status === 'DONE' && late) {
+      todoToUpdate.score = 'LOW';
+    }
+    if (status === 'DONE' && early) {
+      todoToUpdate.score = 'HIGH';
+    }
+    if (status === 'DONE' && noDeadline) {
+      todoToUpdate.score = 'HIGH';
+    }
+  }
+
+  todoToUpdate.description = description;
+  todoToUpdate.tagIds = tagIds;
+  todoToUpdate.status = status;
+  todoToUpdate.parentId = parentId;
+  todoToUpdate.deadline = deadline;
+
+  return {};
+}
+
+function cycleCheck(currentTodoItemId: number, newParentId: number): boolean {
+  const data = getData();
+  const visited = new Set<number>();
+  visited.add(currentTodoItemId);
+
+  let current = data.todos.find(todo => todo.todoItemId === newParentId);
+
+  while (current) {
+    if (current.todoItemId === currentTodoItemId) {
+      return true;
+    }
+
+    visited.add(current.todoItemId);
+
+    if (current.parentId === null) {
+      break;
+    }
+
+    current = data.todos.find(todo => todo.todoItemId === current.parentId);
+
+    if (visited.has(current.todoItemId)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export function todoList(parentId: number | null, tagIds?: number[] | null, status?: string | null): TodoListReturn | Error {
+  const data = getData();
+  const statuses = ['TODO', 'INPROGRESS', 'BLOCKED', 'DONE'];
 
   if (status !== null) {
     if (!statuses.includes(status)) {

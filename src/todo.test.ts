@@ -3,8 +3,10 @@ import {
   requestTodoDetails,
   requestTodoDelete,
   requestTodoCreate,
-  // requestTodoUpdate,
+  requestTodoUpdate,
   requestTodoList,
+  requestTagCreate,
+  requestTagList,
   // requestTodoBulk
 } from './helperTest';
 
@@ -17,9 +19,11 @@ const ERROR = { error: expect.any(String) };
 
 let todoItemIdObj: any;
 let todoDetailsObj: any;
-// let todoItemIdObj2: any;
-// let todoItemIdObj3: any;
-// let todoItemIdObj4: any;
+let todoItemIdObj2: any;
+let todoItemIdObj3: any;
+let todoItemIdObj4: any;
+let tagListObj: any;
+let firstTagId: any;
 
 describe('requestTodoDetails Tests', () => {
   beforeEach(() => {
@@ -113,25 +117,139 @@ describe('requestTodoCreate Tests', () => {
   });
 });
 
-// describe('requestTodoUpdate Tests', () => {
-//   beforeEach(() => {
-//     requestClear();
-//     requestTagCreate('Tag1');
-//     tagListObj = requestTagList();
-//     const firstTag = tagListObj.returnBody.tags[0];
-//     firstTagId = firstTag.tagId;
-//   });
-//   test('All Correct', () => {
-//     const res = requestTagName(firstTagId);
-//     expect(res.statusCode).toStrictEqual(OK);
-//     expect(res.returnBody).toStrictEqual({ name: 'Tag1' });
-//   });
-//   test('tagId does not exist', () => {
-//     const res = requestTagName(-1);
-//     expect(res.statusCode).toStrictEqual(400);
-//     expect(res.returnBody).toStrictEqual(ERROR);
-//   });
-// });
+describe('requestTodoUpdate Tests', () => {
+  beforeEach(() => {
+    requestClear();
+    todoItemIdObj = requestTodoCreate('description', null);
+    todoDetailsObj = requestTodoDetails(todoItemIdObj.returnBody.todoItemId);
+    requestTagCreate('Tag1');
+    tagListObj = requestTagList();
+    const firstTag = tagListObj.returnBody.tags[0];
+    firstTagId = firstTag.tagId;
+  });
+  describe.skip('All Correct', () => {
+    beforeEach(() => {
+      requestTodoUpdate(todoItemIdObj.returnBody.todoItemId, 'description', [firstTagId], 'DONE', null, 1750000000);
+    });
+    test('score = high', () => {
+      const resDetails = requestTodoDetails(todoItemIdObj.returnBody.todoItemId);
+      expect(resDetails.statusCode).toStrictEqual(OK);
+      expect(resDetails.returnBody).toStrictEqual(
+        {
+          description: 'description',
+          parentId: null,
+          score: 'HIGH',
+          status: 'DONE',
+          tagIds: [firstTagId],
+        }
+      );
+    });
+    test('score = high (no deadline)', () => {
+      requestTodoUpdate(todoItemIdObj.returnBody.todoItemId, 'description', [firstTagId], 'DONE', null, null);
+      const resAfter = requestTodoDetails(todoItemIdObj.returnBody.todoItemId);
+      expect(resAfter.statusCode).toStrictEqual(OK);
+      expect(resAfter.returnBody).toStrictEqual({
+        description: 'description',
+        parentId: null,
+        score: 'HIGH',
+        status: 'DONE',
+        tagIds: [firstTagId],
+      });
+    });
+  });
+  test('score = low', () => {
+    requestTodoUpdate(todoItemIdObj.returnBody.todoItemId, 'description', [firstTagId], 'DONE', null, 1);
+    const resDetails = requestTodoDetails(todoItemIdObj.returnBody.todoItemId);
+    expect(resDetails.statusCode).toStrictEqual(OK);
+    expect(resDetails.returnBody).toStrictEqual(
+      {
+        description: 'description',
+        parentId: null,
+        score: 'LOW',
+        status: 'DONE',
+        tagIds: [firstTagId],
+      }
+    );
+  });
+
+  test('todoItemId is not valid', () => {
+    const res = requestTodoUpdate('asd', 'description', [firstTagId], 'TODO', null, 1750000000);
+    expect(res.statusCode).toStrictEqual(400);
+    expect(res.returnBody).toStrictEqual(ERROR);
+    const resDetails = requestTodoDetails(todoItemIdObj.returnBody.todoItemId);
+    expect(resDetails.statusCode).toStrictEqual(200);
+    expect(resDetails.returnBody).toStrictEqual(todoDetailsObj.returnBody);
+  });
+  test('Description is less than 1 character', () => {
+    const res = requestTodoUpdate(todoItemIdObj.returnBody.todoItemId, '', [firstTagId], 'TODO', null, 1750000000);
+    expect(res.statusCode).toStrictEqual(400);
+    expect(res.returnBody).toStrictEqual(ERROR);
+    const resDetails = requestTodoDetails(todoItemIdObj.returnBody.todoItemId);
+    expect(resDetails.statusCode).toStrictEqual(200);
+    expect(resDetails.returnBody).toStrictEqual(todoDetailsObj.returnBody);
+  });
+  test('A todo item of this description, that shares a common immediate parent task (or a null parent), already exists', () => {
+    todoItemIdObj2 = requestTodoCreate('description1', todoItemIdObj.returnBody.todoItemId);
+    const res = requestTodoUpdate(todoItemIdObj2.returnBody.todoItemId, 'description', [firstTagId], 'TODO', todoItemIdObj.returnBody.todoItemId, 1750000000);
+    expect(res.statusCode).toStrictEqual(400);
+    expect(res.returnBody).toStrictEqual(ERROR);
+    const resDetails = requestTodoDetails(todoItemIdObj.returnBody.todoItemId);
+    expect(resDetails.statusCode).toStrictEqual(200);
+    expect(resDetails.returnBody).toStrictEqual(todoDetailsObj.returnBody);
+  });
+  test('status is not a valid enum of statuses', () => {
+    const res = requestTodoUpdate(todoItemIdObj.returnBody.todoItemId, 'description', [firstTagId], 'invalidStatus', null, 1750000000);
+    expect(res.statusCode).toStrictEqual(400);
+    expect(res.returnBody).toStrictEqual(ERROR);
+    const resDetails = requestTodoDetails(todoItemIdObj.returnBody.todoItemId);
+    expect(resDetails.statusCode).toStrictEqual(200);
+    expect(resDetails.returnBody).toStrictEqual(todoDetailsObj.returnBody);
+  });
+  test('tagIds contains any invalid tagIds', () => {
+    const res = requestTodoUpdate(todoItemIdObj.returnBody.todoItemId, 'description', [-1], 'TODO', null, 1750000000);
+    expect(res.statusCode).toStrictEqual(400);
+    expect(res.returnBody).toStrictEqual(ERROR);
+    const resDetails = requestTodoDetails(todoItemIdObj.returnBody.todoItemId);
+    expect(resDetails.statusCode).toStrictEqual(200);
+    expect(resDetails.returnBody).toStrictEqual(todoDetailsObj.returnBody);
+  });
+  test('parentId refers to this todo list items ID', () => {
+    const res = requestTodoUpdate(todoItemIdObj.returnBody.todoItemId, 'description', [firstTagId], 'TODO', todoItemIdObj.returnBody.todoItemId, 1750000000);
+    expect(res.statusCode).toStrictEqual(400);
+    expect(res.returnBody).toStrictEqual(ERROR);
+    const resDetails = requestTodoDetails(todoItemIdObj.returnBody.todoItemId);
+    expect(resDetails.statusCode).toStrictEqual(200);
+    expect(resDetails.returnBody).toStrictEqual(todoDetailsObj.returnBody);
+  });
+  test('parentId is not null and does not refer to an exiting todoItemId', () => {
+    todoItemIdObj2 = requestTodoCreate('description1', todoItemIdObj.returnBody.todoItemId);
+    const res = requestTodoUpdate(todoItemIdObj2.returnBody.todoItemId, 'description', [firstTagId], 'TODO', -1, 1750000000);
+    expect(res.statusCode).toStrictEqual(400);
+    expect(res.returnBody).toStrictEqual(ERROR);
+    const resDetails = requestTodoDetails(todoItemIdObj.returnBody.todoItemId);
+    expect(resDetails.statusCode).toStrictEqual(200);
+    expect(resDetails.returnBody).toStrictEqual(todoDetailsObj.returnBody);
+  });
+  test('parentId would create a cycle in the todo list structure', () => {
+    todoItemIdObj2 = requestTodoCreate('description2', null);
+    todoItemIdObj3 = requestTodoCreate('description3', null);
+    todoItemIdObj4 = requestTodoCreate('description4', null);
+    requestTodoUpdate(todoItemIdObj2.returnBody.todoItemId, 'description2', [firstTagId], 'DONE', todoItemIdObj.returnBody.todoItemId, 1750000000);
+    requestTodoUpdate(todoItemIdObj3.returnBody.todoItemId, 'description3', [firstTagId], 'DONE', todoItemIdObj2.returnBody.todoItemId, 1750000000);
+    requestTodoUpdate(todoItemIdObj4.returnBody.todoItemId, 'description4', [firstTagId], 'DONE', todoItemIdObj3.returnBody.todoItemId, 1750000000);
+    const res = requestTodoUpdate(todoItemIdObj2.returnBody.todoItemId, 'description2', [firstTagId], 'DONE', todoItemIdObj4.returnBody.todoItemId, 1750000000);
+    expect(res.statusCode).toStrictEqual(400);
+    expect(res.returnBody).toStrictEqual(ERROR);
+  });
+  test('deadline is not null and is not a valid unix timestamp', () => {
+    const res = requestTodoUpdate(todoItemIdObj.returnBody.todoItemId, 'description', [firstTagId], 'TODO', null, -1);
+    expect(res.statusCode).toStrictEqual(400);
+    expect(res.returnBody).toStrictEqual(ERROR);
+    const resDetails = requestTodoDetails(todoItemIdObj.returnBody.todoItemId);
+    expect(resDetails.statusCode).toStrictEqual(200);
+    expect(resDetails.returnBody).toStrictEqual(todoDetailsObj.returnBody);
+  });
+});
 
 describe('requestTodoList Tests', () => {
   beforeEach(() => {

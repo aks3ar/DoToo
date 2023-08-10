@@ -4,9 +4,9 @@ import config from './config.json';
 import cors from 'cors';
 import errorHandler from 'middleware-http-errors';
 
-import {
-  TodoStatuses
-} from './interface';
+// import {
+//   TodoStatuses
+// } from './interface';
 
 import {
   clear
@@ -23,7 +23,7 @@ import {
   todoDetails,
   todoDelete,
   todoCreate,
-  // todoUpdate,
+  todoUpdate,
   todoList,
   // todoBulk
 } from './todo';
@@ -129,15 +129,16 @@ app.post('/todo/item', (req: Request, res: Response) => {
   res.json(response);
 });
 
-// app.put('/todo/item', (req: Request, res: Response) => {
-//   const { todoItemId, description, tagIds, status, parentId, deadline } = req.body;
-//   const response = todoUpdate(todoItemId, description, tagIds, status, parentId, deadline);
-//   if ('error' in response) {
-//     res.status(response.code).json({ error: response.error });
-//     return;
-//   }
-//   res.json(response);
-// });
+app.put('/todo/item', (req: Request, res: Response) => {
+  const { todoItemId, description, status, parentId, deadline } = req.body;
+  const tagIds = JSON.parse(req.body.tagIds as string) as number[];
+  const response = todoUpdate(todoItemId, description, tagIds, status, parentId, deadline);
+  if ('error' in response) {
+    res.status(response.code).json({ error: response.error });
+    return;
+  }
+  res.json(response);
+});
 
 app.get('/todo/list', (req: Request, res: Response) => {
   let parentId: number | null = null;
@@ -158,13 +159,9 @@ app.get('/todo/list', (req: Request, res: Response) => {
   }
 
   // Set status if it's provided, otherwise set it to null
-  let status: TodoStatuses | null = null;
+  let status: string | null = null;
   if (req.query.status) {
-    status = req.query.status as TodoStatuses;
-    if (!Object.values(TodoStatuses).includes(status)) {
-      res.status(400).json({ error: 'status is not a valid status' });
-      return;
-    }
+    status = req.query.status as string;
   }
 
   const response = todoList(parentId, tagIds, status);
