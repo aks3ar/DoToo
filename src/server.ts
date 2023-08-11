@@ -50,11 +50,6 @@ app.use(morgan('dev'));
 //  ================= WORK IS DONE BELOW THIS LINE ===================
 // ====================================================================
 
-// Example get request
-app.get('/example/route', (req: Request, res: Response) => {
-  return res.json({ message: 'Hi' });
-});
-
 app.delete('/clear', (req: Request, res: Response) => {
   const response = clear();
   res.json(response);
@@ -147,7 +142,6 @@ app.get('/todo/list', (req: Request, res: Response) => {
     parentId = req.query.parentId as any;
   }
 
-  // Parse tagIds if it's provided, otherwise set it to null
   let tagIds: number[] | null = null;
   if (req.query.tagIds) {
     try {
@@ -158,7 +152,6 @@ app.get('/todo/list', (req: Request, res: Response) => {
     }
   }
 
-  // Set status if it's provided, otherwise set it to null
   let status: string | null = null;
   if (req.query.status) {
     status = req.query.status as string;
