@@ -64,7 +64,7 @@ export function requestTodoBulk(bulkString: string) {
   return requestHelper('POST', '/todo/item/bulk', { bulkString }, { });
 }
 
-export function requestSummary(step: number) {
+export function requestSummary(step: any | number | null) {
   return requestHelper('GET', '/summary', { step }, { });
 }
 

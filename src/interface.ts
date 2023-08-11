@@ -78,3 +78,7 @@ export interface TodoList {
 export interface TodoListReturn {
   todoItems: TodoList[];
 }
+
+export interface SummaryReturn {
+  todoItemIds: number[];
+}

@@ -28,10 +28,10 @@ import {
   // todoBulk
 } from './todo';
 
-// import {
-//   summary,
-//   notifications
-// } from './other';
+import {
+  summary,
+  // notifications
+} from './other';
 
 // Set up web app
 const app = express();
@@ -182,15 +182,15 @@ app.get('/todo/list', (req: Request, res: Response) => {
 //   res.json(response);
 // });
 
-// app.get('/summary', (req: Request, res: Response) => {
-//   const step = req.query.step as string;
-//   const response = summary(step);
-//   if ('error' in response) {
-//     res.status(response.code).json({ error: response.error });
-//     return;
-//   }
-//   res.json(response);
-// });
+app.get('/summary', (req: Request, res: Response) => {
+  const step = req.query.step as any;
+  const response = summary(step);
+  if ('error' in response) {
+    res.status(response.code).json({ error: response.error });
+    return;
+  }
+  res.json(response);
+});
 
 // app.get('/notifications', (req: Request, res: Response) => {
 //   const response = notifications();

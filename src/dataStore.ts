@@ -9,6 +9,7 @@ export type Tag = {
 }
 
 export type Todo = {
+  timeCompleted: number;
   todoItemId: any;
   description: string;
   tagIds: number[];

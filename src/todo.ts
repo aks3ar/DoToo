@@ -12,6 +12,10 @@ import {
   TodoListReturn
 } from './interface';
 
+// import {
+//   tagCreate
+// } from './tag';
+
 /**
   * Get details about a todo item
   *
@@ -209,15 +213,13 @@ export function todoUpdate(todoItemId: any, description: string, tagIds: number[
   const late = deadline < timeNow;
   const noDeadline = deadline === null;
 
-  if (todoToUpdate.status !== status && todoToUpdate.deadline !== deadline) {
-    if (status === 'DONE' && late) {
+  if (todoToUpdate.status !== status && todoToUpdate.deadline !== deadline && status === 'DONE') {
+    todoToUpdate.timeCompleted = timeNow;
+    if (early || noDeadline) {
+      todoToUpdate.score = 'HIGH';
+    }
+    if (late) {
       todoToUpdate.score = 'LOW';
-    }
-    if (status === 'DONE' && early) {
-      todoToUpdate.score = 'HIGH';
-    }
-    if (status === 'DONE' && noDeadline) {
-      todoToUpdate.score = 'HIGH';
     }
   }
 
