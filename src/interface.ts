@@ -37,7 +37,7 @@ export interface TodoDetailsReturn {
   description: string;
   tagIds: number[];
   status: string;
-  parentId: number | null;
+  parentId: any | number | null;
   score: string;
 }
 
@@ -45,7 +45,7 @@ export interface NewTodo {
   todoItemId: any;
   description: string;
   tagIds: number[];
-  parentId: number | null;
+  parentId: any | number | null;
   status: string;
   deadline: number | null;
   score: string;
@@ -62,7 +62,7 @@ export interface TodoListTime {
   description: string;
   tagIds: number[];
   status: string;
-  parentId: number | null;
+  parentId: any | number | null;
   score: string;
   timeCreated: number;
 }
@@ -71,7 +71,7 @@ export interface TodoList {
   description: string;
   tagIds: number[];
   status: string;
-  parentId: number | null;
+  parentId: any | number | null;
   score: string;
 }
 

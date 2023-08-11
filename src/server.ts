@@ -141,10 +141,10 @@ app.put('/todo/item', (req: Request, res: Response) => {
 });
 
 app.get('/todo/list', (req: Request, res: Response) => {
-  let parentId: number | null = null;
+  let parentId: any | number | null = null;
 
   if (req.query.parentId !== undefined && req.query.parentId !== null) {
-    parentId = parseInt(req.query.parentId as string);
+    parentId = req.query.parentId as any;
   }
 
   // Parse tagIds if it's provided, otherwise set it to null

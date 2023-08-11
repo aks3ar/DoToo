@@ -97,7 +97,7 @@ function doTodoDelete(todoItemId: number) {
   * @returns {} - Returns an empty object.
   *
 */
-export function todoCreate(description: string, parentId: number | null): TodoCreateReturn | Error {
+export function todoCreate(description: string, parentId: any | number | null): TodoCreateReturn | Error {
   const data = getData();
   const lowerBound = 1;
   const todoLimit = 50;
@@ -110,7 +110,7 @@ export function todoCreate(description: string, parentId: number | null): TodoCr
     throw HTTPError(400, 'Description is less than 1 character');
   }
 
-  if (parentId !== null) {
+  if (parentId !== 'null') {
     const parent = data.todos.find((parent) => parent.todoItemId === parentId);
     if (!parent) {
       throw HTTPError(400, 'parentId does not refer to a different, existing todo item.');
@@ -150,7 +150,7 @@ export function todoCreate(description: string, parentId: number | null): TodoCr
   return { todoItemId: randomId };
 }
 
-export function todoUpdate(todoItemId: any, description: string, tagIds: number[], status: string, parentId: number | null, deadline: number | null): object | Error {
+export function todoUpdate(todoItemId: any, description: string, tagIds: number[], status: string, parentId: any | number | null, deadline: number | null): object | Error {
   const data = getData();
   const lowerBound = 1;
 
@@ -187,7 +187,7 @@ export function todoUpdate(todoItemId: any, description: string, tagIds: number[
     }
   }
 
-  if (parentId !== null) {
+  if (parentId !== 'null') {
     if (!data.todos.some(todo => todo.todoItemId === parentId)) {
       throw HTTPError(400, 'parentId is not null and does not refer to an exiting todoItemId');
     }
@@ -244,7 +244,7 @@ function cycleCheck(currentTodoItemId: number, newParentId: number): boolean {
 
     visited.add(current.todoItemId);
 
-    if (current.parentId === null) {
+    if (current.parentId === 'null') {
       break;
     }
 
@@ -258,7 +258,7 @@ function cycleCheck(currentTodoItemId: number, newParentId: number): boolean {
   return false;
 }
 
-export function todoList(parentId: number | null, tagIds?: number[] | null, status?: string | null): TodoListReturn | Error {
+export function todoList(parentId: any | number | null, tagIds?: number[] | null, status?: string | null): TodoListReturn | Error {
   const data = getData();
   const statuses = ['TODO', 'INPROGRESS', 'BLOCKED', 'DONE'];
 
@@ -268,31 +268,42 @@ export function todoList(parentId: number | null, tagIds?: number[] | null, stat
     }
   }
 
-  // if (tagIds !== null) {
-  //   if (tagIds.length === 0 || tagIds.some(tagId => !data.tags.some(tag => tag.tagId === tagId))) {
-  //     throw HTTPError(400, 'tagIds is an empty list or tagIds contains any invalid tagId');
-  //   }
-  // }
-
-  if (parentId !== null) {
+  if (parentId !== 'null') {
+    parentId = parseInt(parentId);
     if (!data.todos.some(todo => todo.todoItemId === parentId)) {
       throw HTTPError(400, 'parentId does not refer to a valid todo item');
     }
   }
 
-  let todoList: TodoListTime[] = [...data.todos];
-
   if (tagIds !== null) {
-    todoList = todoList.filter(todo => arrayEquals(todo.tagIds, tagIds));
+    if (tagIds.length === 0 || tagIds.some(tagId => !data.tags.some(tag => tag.tagId === tagId))) {
+      throw HTTPError(400, 'tagIds is an empty list or tagIds contains any invalid tagId');
+    }
   }
 
-  if (status !== null) {
-    todoList = todoList.filter(todo => todo.status === status);
+  let todoList: TodoListTime[] = [];
+  let tagIdArray: any;
+  let statusArray: any;
+  let parentIdArray: any;
+
+  if (tagIds) {
+    tagIdArray = data.todos.filter(todo => arrayEquals(todo.tagIds, tagIds));
+    todoList.push(...tagIdArray);
   }
 
-  if (parentId !== null) {
-    todoList = todoList.filter(todo => todo.todoItemId === parentId);
+  if (status !== '') {
+    statusArray = data.todos.filter(todo => todo.status === status);
+    todoList.push(...statusArray);
   }
+
+  if (parentId !== '') {
+    parentIdArray = data.todos.filter(todo => todo.parentId === parentId);
+    todoList.push(...parentIdArray);
+  }
+
+  todoList = todoList.filter(
+    (todo, index, self) => index === self.findIndex(t => t.todoItemId === todo.todoItemId)
+  );
 
   todoList.sort((a, b) => b.timeCreated - a.timeCreated);
 

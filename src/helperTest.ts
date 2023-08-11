@@ -48,15 +48,15 @@ export function requestTodoDelete(todoItemId: number) {
   return requestHelper('DELETE', '/todo/item', { todoItemId }, { });
 }
 
-export function requestTodoCreate(description: string, parentId: number | null) {
+export function requestTodoCreate(description: string, parentId: any | number | null) {
   return requestHelper('POST', '/todo/item', { description, parentId }, { });
 }
 
-export function requestTodoUpdate(todoItemId: any, description: string, tagIds: number[], status: string, parentId: number | null, deadline: number | null) {
+export function requestTodoUpdate(todoItemId: any, description: string, tagIds: number[], status: string, parentId: any | number | null, deadline: number | null) {
   return requestHelper('PUT', '/todo/item', { todoItemId, description, tagIds: JSON.stringify(tagIds), status, parentId, deadline }, { });
 }
 
-export function requestTodoList(parentId: number | null, tagIds?: number[] | null, status?: string | null) {
+export function requestTodoList(parentId: any | number | null, tagIds?: number[] | null, status?: string | null) {
   return requestHelper('GET', '/todo/list', { parentId, tagIds: JSON.stringify(tagIds), status }, { });
 }
 

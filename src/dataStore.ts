@@ -13,7 +13,7 @@ export type Todo = {
   description: string;
   tagIds: number[];
   status: string;
-  parentId: number | null;
+  parentId: any | number | null;
   score: string;
   deadline: number | null;
   timeCreated: number;

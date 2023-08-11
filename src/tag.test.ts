@@ -92,7 +92,7 @@ describe('requestTagDelete Tests', () => {
     });
   });
   test('tagId does not exist', () => {
-    const res = requestTagName(-1);
+    const res = requestTagDelete(-1);
     expect(res.statusCode).toStrictEqual(400);
     expect(res.returnBody).toStrictEqual(ERROR);
   });
