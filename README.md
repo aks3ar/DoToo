@@ -2,44 +2,6 @@
 
 **✨ ☑️ DoToo ☑️ ✨**
 
-## Contents
-
-[[_TOC_]]
-
-## Change Log
-
-Thursday:
-* 12:00pm: clarifications on passing `null` parameters and other hints
-  * Clarify /todo/list how `null`` tagids are passed in.
-  * Clarify item itself is not included in check of unique description for PUT `/todo/item`.
-  * **Add section 1.5 to clarify way `null` is passed in requests.**
-  * Add section 3.1 improving code confidence.
-  * Add note that configuration comments disabling eslint and tsc are not allowed.
-  * Clarify dryrun run instructions. Add debug hints.
-  * Add the extended deadline and clarify deadline which extensions are applied upon.
-* 8:30pm:
-  * clarified example return in GET /notifications to fix swagger defaults
-
-Wednesday:
- * 12:00 pm: quality of life improvements
-   * changed linting command `npm run lint` command to be `npm run lint .`. (IMPORTANT!)
-   * Added section on undefined behaviour.
-   * added to FAQ.
-   * clarified that there are a maximum of 50 todo items in the system.
-   * clarified that the converse of editing only the status is true - you should use the old deadline to calculate the score.
-   * fix typo of `name` -> `description` in `todo/item/bulk`
-
-Tuesday:
- * 3:00 pm: clarifications on how cycles work
-   * create FAQ for common questions
-   * updated cycles to not include null, as the null node cannot be involved in a cycle.
-   * Clarified `tagIds` instead of `tags`.
- * 4:00 pm: clarifications on how `status` and `deadline` interplay
-   * Updated `PUT /todo/item` to allow a `null` `deadline` and a `deadline` in the past. 
-   * made the implicit invalid `parentId` error explicit in `PUT /todo/item`.
-   * Clarified `status` description.
-   * Updated FAQ.
- * 7:30pm: clarified that `DELETE /todo/item` continues until all children, sub-children, sub-sub-children, etc, of the deleted node are deleted.
 
 ## 🌈 0. Overview
 
